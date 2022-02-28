@@ -17,8 +17,10 @@ public class Users {
     private String lastname;
     @Column
     private String email;
+//    @Column
+//    private String datecreated;
     @Column
-    private String datecreated;
+    private String password;
 
     public int getId() {
         return id;
@@ -56,7 +58,9 @@ public class Users {
         this.email = email;
     }
 
-    public String getDatecreated() {
-        return datecreated;
-    }
+//    public String getDatecreated() { return datecreated; }
+
+    public String getPassword() {return password; }
+
+    public void setPassword(String password) { this.password = password; }
 }
