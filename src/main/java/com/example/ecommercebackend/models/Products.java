@@ -16,11 +16,11 @@ public class Products {
     @Column
     private double price;
     @Column
-    private String image_URL;
+    private String imageURL;
     @Column
     private int stock;
-    @Column
-    private int category_id;
+//    @Column
+//    private int category_id;
 
     public int getId() {
         return id;
@@ -50,12 +50,12 @@ public class Products {
         this.price = price;
     }
 
-    public String getImage_URL() {
-        return image_URL;
+    public String getImageURL() {
+        return imageURL;
     }
 
-    public void setImage_URL(String image_URL) {
-        this.image_URL = image_URL;
+    public void setImage_URL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public int getStock() {
@@ -65,9 +65,9 @@ public class Products {
     public void setStock(int stock) {
         this.stock = stock;
     }
-
-    public int getCategory_id() {
-        return category_id;
-    }
+//
+//    public int getCategory_id() {
+//        return category_id;
+//    }
 }
 

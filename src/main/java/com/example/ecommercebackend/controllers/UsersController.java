@@ -32,6 +32,7 @@ public class UsersController {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return ResponseEntity.ok(users);
     }
+
 //  SIGN UP
     @PostMapping("signup")
     public Users newUser(@RequestBody Users newUser) {
