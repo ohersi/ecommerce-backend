@@ -1,11 +1,8 @@
 package com.example.ecommercebackend.controllers;
 
-import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Products;
-import com.example.ecommercebackend.models.Users;
-import com.example.ecommercebackend.repositories.ProductsRepository;
+import com.example.ecommercebackend.service.ProductsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,51 +15,46 @@ import java.util.List;
 public class ProductsController {
 
     @Autowired
-    private ProductsRepository productsRepo;
+    ProductsService productsService;
 
 //    GET ALL PRODUCTS
     @GetMapping("collection/all")
     public List<Products> getAllProducts() {
-        return productsRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        return productsService.getAllProducts();
     }
 
 //    GET PRODUCT BY ID
     @GetMapping("products/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Products> getProductsById(@PathVariable int id) {
-        Products products = productsRepo.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-    return ResponseEntity.ok(products);
+       productsService.getProductsById(id);
+    return ResponseEntity.ok(productsService.getProductsById(id));
 }
 
 //    GET PRODUCT BY NAME
     @GetMapping("allproducts/{name}")
     public List<Products> getProductByName(@PathVariable("name") String name) {
-        List<Products> product = productsRepo.findByNameIgnoreCase(name);
-        if(product.isEmpty()) {
-            System.out.println(new ResourceNotFoundException("Product(s): " + name + " not found"));
-        }
-        return productsRepo.findByNameIgnoreCase(name);
+        return productsService.getProductByName(name);
     }
 
 //    CREATE PRODUCT
     @PostMapping("addproduct")
     public Products newProduct(@RequestBody Products product) {
-        return productsRepo.save(product);
+        return productsService.newProduct(product);
     }
 
 //    UPDATE PRODUCT
     @PutMapping("products/{id}")
-    public ResponseEntity<Products> updateProduct(@PathVariable int id, @RequestBody Products newProductInfo) {
-        Products foundProduct = productsRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
-        foundProduct.setName(newProductInfo.getName());
-        foundProduct.setDescription(newProductInfo.getDescription());
-        foundProduct.setPrice(newProductInfo.getPrice());
-        foundProduct.setImage_URL(newProductInfo.getImageURL());
-        foundProduct.setStock(newProductInfo.getStock());
+    public ResponseEntity<Products> updateProduct(@PathVariable int id, @RequestBody Products product) {
+        productsService.updateProducts(id, product);
+        return new ResponseEntity<Products>(productsService.updateProducts(id, product), HttpStatus.CREATED);
+    }
 
-        Products updateProduct = productsRepo.save(foundProduct);
-        return new ResponseEntity<Products>(updateProduct, HttpStatus.CREATED);
+//    DELETE PRODUCT
+    @DeleteMapping("products/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable int id) {
+        productsService.deleteProduct(id);
+        String message = "User has been deleted";
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

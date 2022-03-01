@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.models;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name="products")
@@ -19,8 +20,12 @@ public class Products {
     private String imageURL;
     @Column
     private int stock;
-//    @Column
-//    private int category_id;
+    @Column
+    private Date date_added;
+
+//    @ManyToOne
+//    private Category category;
+
 
     public int getId() {
         return id;
@@ -54,7 +59,7 @@ public class Products {
         return imageURL;
     }
 
-    public void setImage_URL(String imageURL) {
+    public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
 
@@ -65,9 +70,17 @@ public class Products {
     public void setStock(int stock) {
         this.stock = stock;
     }
+
+    public Date getDate_added() {
+        return date_added;
+    }
+
+    //    public void setCategory(Category category) {
+//        this.category = category;
+//    }
 //
-//    public int getCategory_id() {
-//        return category_id;
+//    public Category getCategory() {
+//        return category;
 //    }
 }
 

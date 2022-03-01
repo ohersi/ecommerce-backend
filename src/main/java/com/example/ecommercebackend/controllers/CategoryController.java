@@ -4,6 +4,7 @@ import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.CategoryRepository;
+import com.example.ecommercebackend.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -18,49 +19,39 @@ import java.util.List;
 public class CategoryController {
 
     @Autowired
-    private CategoryRepository categoryRepo;
+//    private CategoryRepository categoryRepo;
+    CategoryService categoryService;
 
 //    GET ALL CATEGORIES
     @GetMapping("categories")
     public List<Category> getAllCategories() {
-        return categoryRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        return categoryService.getAllCategories();
     }
 
-//    GET USER BY NAME
+//    GET CATEGORY BY NAME
     @GetMapping("category/{name}")
     @ResponseStatus(HttpStatus.OK)
-    public List<Category> GetCategoryByName(@PathVariable String name) {
-        List<Category> categories = categoryRepo.findByNameIgnoreCase(name);
-        if(categories.isEmpty()) {
-            System.out.println(new ResourceNotFoundException("Category " + name + " not found"));
-        }
-        return categoryRepo.findByNameIgnoreCase(name);
+    public List<Category> getCategoryByName(@PathVariable("name") String name) {
+        return categoryService.getCategoryByName(name);
     }
 
 //    CREATE CATEGORY
     @PostMapping("addcategory")
     public Category newCategory(@RequestBody Category category) {
-        return categoryRepo.save(category);
+        return categoryService.newCategory(category);
     }
 
 //    UPDATE CATEGORY
     @PutMapping("category/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category newCategoryInfo) {
-        Category foundCategory = categoryRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
-        foundCategory.setName(newCategoryInfo.getName());
-        foundCategory.setDescription(newCategoryInfo.getDescription());
-
-        Category updatedCategory = categoryRepo.save(foundCategory);
-        return new ResponseEntity<Category>(updatedCategory, HttpStatus.CREATED);
+    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
+            categoryService.updateCategory(id, category);
+        return new ResponseEntity<Category>(categoryService.updateCategory(id, category), HttpStatus.CREATED);
     }
 
-//    DELETE USER
+//    DELETE CATEGORY
     @DeleteMapping("category/{id}")
     public ResponseEntity<String> deleteCategory (@PathVariable int id) {
-        categoryRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-        categoryRepo.deleteById(id);
+            categoryService.deleteCategory(id);
         String message = "Category has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

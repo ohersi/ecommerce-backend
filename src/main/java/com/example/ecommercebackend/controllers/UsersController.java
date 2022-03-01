@@ -3,6 +3,7 @@ package com.example.ecommercebackend.controllers;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
+import com.example.ecommercebackend.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -17,27 +18,27 @@ import java.util.List;
 public class UsersController {
 
     @Autowired
-    private UsersRepository usersRepo;
+//    private UsersRepository usersRepo;
+    UsersService usersService;
 
 //    GET ALL USERS
     @GetMapping("allusers")
     public List<Users> getAllUsers() {
-        return usersRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
+        return usersService.getAllUsers();
     }
 
 //    GET USER BY ID
     @GetMapping("user/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Users> getUsersById(@PathVariable int id) {
-        Users users = usersRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        return ResponseEntity.ok(users);
+        usersService.getUsersById(id);
+        return ResponseEntity.ok(usersService.getUsersById(id));
     }
 
 //  SIGN UP
     @PostMapping("signup")
-    public Users newUser(@RequestBody Users newUser) {
-        return usersRepo.save(newUser);
+    public Users newUser(@RequestBody Users user) {
+        return usersService.newUser(user);
     }
 
 //  SIGN IN
@@ -48,25 +49,15 @@ public class UsersController {
 
     // UPDATE USER
     @PutMapping("user/{id}")
-    public ResponseEntity<Users> updateUser(@PathVariable int id, @RequestBody Users newUserInfo) {
-        Users foundUser = usersRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
-        foundUser.setUsername(newUserInfo.getUsername());
-        foundUser.setFirstname(newUserInfo.getFirstname());
-        foundUser.setLastname(newUserInfo.getLastname());
-        foundUser.setEmail(newUserInfo.getEmail());
-        foundUser.setPassword(newUserInfo.getPassword());
-
-        Users updatedUser = usersRepo.save(foundUser);
-        return new ResponseEntity<Users>(updatedUser, HttpStatus.CREATED);
+    public ResponseEntity<Users> updateUser(@PathVariable int id, @RequestBody Users user) {
+        usersService.updateUser(id, user);
+        return new ResponseEntity<Users>(usersService.updateUser(id, user), HttpStatus.CREATED);
     }
 
     //DELETE USER
     @DeleteMapping("user/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        usersRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        usersRepo.deleteById(id);
+        usersService.deleteUser(id);
         String message = "User has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
