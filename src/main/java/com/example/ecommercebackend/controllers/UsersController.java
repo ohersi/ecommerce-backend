@@ -24,6 +24,7 @@ public class UsersController {
     public List<Users> getAllUsers() {
         return usersRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
+
 //    GET USER BY ID
     @GetMapping("user/{id}")
     @ResponseStatus(HttpStatus.OK)

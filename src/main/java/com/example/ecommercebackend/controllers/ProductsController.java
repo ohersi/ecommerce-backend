@@ -19,16 +19,18 @@ public class ProductsController {
 
     @Autowired
     private ProductsRepository productsRepo;
+
 //    GET ALL PRODUCTS
     @GetMapping("collection/all")
     public List<Products> getAllProducts() {
         return productsRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
+
 //    GET PRODUCT BY ID
-@GetMapping("products/{id}")
-@ResponseStatus(HttpStatus.OK)
-public ResponseEntity<Products> getProductsById(@PathVariable int id) {
-    Products products = productsRepo.findById(id)
+    @GetMapping("products/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Products> getProductsById(@PathVariable int id) {
+        Products products = productsRepo.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
     return ResponseEntity.ok(products);
 }
@@ -36,11 +38,11 @@ public ResponseEntity<Products> getProductsById(@PathVariable int id) {
 //    GET PRODUCT BY NAME
     @GetMapping("allproducts/{name}")
     public List<Products> getProductByName(@PathVariable("name") String name) {
-        List<Products> product = productsRepo.findByName(name);
+        List<Products> product = productsRepo.findByNameIgnoreCase(name);
         if(product.isEmpty()) {
-            System.out.println(new ResourceNotFoundException("Product(s) with the name" + name + "not found"));
+            System.out.println(new ResourceNotFoundException("Product(s): " + name + " not found"));
         }
-        return productsRepo.findByName(name);
+        return productsRepo.findByNameIgnoreCase(name);
     }
 
 //    CREATE PRODUCT
