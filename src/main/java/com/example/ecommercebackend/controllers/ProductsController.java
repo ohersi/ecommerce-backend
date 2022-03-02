@@ -21,9 +21,6 @@ public class ProductsController {
     @Autowired
     ProductsService productsService;
 
-    @Autowired
-    CategoryRepository categoryRepo;
-
 //    GET ALL PRODUCTS
     @GetMapping("collection/all")
     public List<Products> getAllProducts() {

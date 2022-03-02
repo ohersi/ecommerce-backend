@@ -42,10 +42,10 @@ public class UsersController {
     }
 
 //  SIGN IN
-//    @PostMapping("signin")
-//    public Users signInUser(@RequestBody Users user) {
-//        return usersRepo.signIn(user);
-//    }
+    @PostMapping("signin")
+    public Users signInUser(@RequestBody Users user) {
+        return usersService.signInUser(user);
+    }
 
     // UPDATE USER
     @PutMapping("user/{id}")
