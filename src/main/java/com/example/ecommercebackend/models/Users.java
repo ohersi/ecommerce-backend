@@ -1,6 +1,10 @@
 package com.example.ecommercebackend.models;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name="users")
@@ -17,8 +21,9 @@ public class Users {
     private String lastname;
     @Column
     private String email;
-//    @Column
-//    private String datecreated;
+    @Column
+    @CreationTimestamp
+    private Timestamp date_added;
     @Column
     private String password;
 
@@ -58,7 +63,9 @@ public class Users {
         this.email = email;
     }
 
-//    public String getDatecreated() { return datecreated; }
+    public Timestamp getDate_added() {
+        return date_added;
+    }
 
     public String getPassword() {return password; }
 

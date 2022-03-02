@@ -1,42 +1,32 @@
-package com.example.ecommercebackend.models;
+package com.example.ecommercebackend.dto;
 
-import org.hibernate.annotations.CreationTimestamp;
-
-import javax.persistence.*;
 import java.sql.Timestamp;
 
-@Entity
-@Table(name="products")
-public class Products {
-    @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class ProductsDTO {
+
     private int id;
-    @Column
+
     private String name;
-    @Column
+
     private String description;
-    @Column
+
     private double price;
-    @Column
+
     private String imageURL;
-    @Column
+
     private int stock;
-    @Column
-    @CreationTimestamp
+
     private Timestamp date_added;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    Category category_id;
+    private int category_id;
 
-    public int getId() {
-        return id;
+    public ProductsDTO() {
     }
 
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -77,12 +67,15 @@ public class Products {
         return date_added;
     }
 
-    public Category getCategory_id() {
+    public void setDate_added(Timestamp date_added) {
+        this.date_added = date_added;
+    }
+
+    public int getCategory_id() {
         return category_id;
     }
 
-    public void setCategory_id(Category category_id) {
+    public void setCategory_id(int category_id) {
         this.category_id = category_id;
     }
 }
-

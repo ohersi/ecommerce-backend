@@ -1,8 +1,11 @@
 package com.example.ecommercebackend.service;
 
+import com.example.ecommercebackend.dto.ProductsDTO;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
+import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
+import com.example.ecommercebackend.repositories.CategoryRepository;
 import com.example.ecommercebackend.repositories.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -15,6 +18,8 @@ public class ProductsService {
 
     @Autowired
     private ProductsRepository productsRepo;
+    @Autowired
+    private CategoryRepository categoryRepo;
 
     public List<Products> getAllProducts() {
         return productsRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
@@ -34,18 +39,31 @@ public class ProductsService {
         return productsRepo.findByNameIgnoreCase(name);
     }
 
-    public Products newProduct(Products product) {
-        return productsRepo.save(product);
+    public Products newProduct(ProductsDTO productsDTO) {
+        Products newProduct = new Products();
+        Category foundCategory = categoryRepo.findById(productsDTO.getCategory_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
+        newProduct.setName(productsDTO.getName());
+        newProduct.setDescription(productsDTO.getDescription());
+        newProduct.setPrice(productsDTO.getPrice());
+        newProduct.setImageURL(productsDTO.getImageURL());
+        newProduct.setStock(productsDTO.getStock());
+        newProduct.setCategory_id(foundCategory);
+
+        return productsRepo.save(newProduct);
     }
 
-    public Products updateProducts(int id, Products newProductInfo) {
+    public Products updateProducts(int id, ProductsDTO productsDTO) {
         Products foundProduct = productsRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found."));
-        foundProduct.setName(newProductInfo.getName());
-        foundProduct.setDescription(newProductInfo.getDescription());
-        foundProduct.setPrice(newProductInfo.getPrice());
-        foundProduct.setImageURL(newProductInfo.getImageURL());
-        foundProduct.setStock(newProductInfo.getStock());
+        Category foundCategory = categoryRepo.findById(productsDTO.getCategory_id())
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found."));
+        foundProduct.setName(productsDTO.getName());
+        foundProduct.setDescription(productsDTO.getDescription());
+        foundProduct.setPrice(productsDTO.getPrice());
+        foundProduct.setImageURL(productsDTO.getImageURL());
+        foundProduct.setStock(productsDTO.getStock());
+        foundProduct.setCategory_id(foundCategory);
 
         Products updateProduct = productsRepo.save(foundProduct);
         return updateProduct;
