@@ -59,7 +59,7 @@ public class ProductsController {
     @DeleteMapping("products/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable int id) {
         productsService.deleteProduct(id);
-        String message = "User has been deleted";
+        String message = "Product has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }

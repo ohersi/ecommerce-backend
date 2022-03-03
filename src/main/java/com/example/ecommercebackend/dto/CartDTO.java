@@ -1,53 +1,53 @@
-package com.example.ecommercebackend.models;
+package com.example.ecommercebackend.dto;
 
+import com.example.ecommercebackend.models.Products;
+import com.example.ecommercebackend.models.Users;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.sql.Timestamp;
-import java.util.Set;
 
-@Entity
-@Table(name="cart")
-public class Cart {
-    @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class CartDTO {
     private int id;
-    @ManyToOne
-    @JoinColumn(name="products_id")
-    private Products products_id;
-    @OneToOne
-    @JoinColumn(name= "users_id")
-    Users users_id;
-    @Column
+
+    private int products_id;
+
+    private int users_id;
+
     private int quantity;
-    @Column
-    @CreationTimestamp
+
     private Timestamp date_added;
-    @Column
-    @UpdateTimestamp
+
     private Timestamp date_updated;
+
+    public CartDTO() {
+    }
 
     public int getId() {
         return id;
     }
 
-    public Products getProducts_id() {
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getProducts_id() {
         return products_id;
     }
 
-    public void setProduct_id(Products products_id) {
+    public void setProducts_id(int products_id) {
         this.products_id = products_id;
     }
 
-    public Users getUsers_id() {
+    public int getUsers_id() {
         return users_id;
     }
 
-    public void setUsers_id(Users users_id) {
+    public void setUsers_id(int users_id) {
         this.users_id = users_id;
     }
 

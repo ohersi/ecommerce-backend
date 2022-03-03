@@ -4,7 +4,6 @@ import com.example.ecommercebackend.dto.ProductsDTO;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
-import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.CategoryRepository;
 import com.example.ecommercebackend.repositories.ProductsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
