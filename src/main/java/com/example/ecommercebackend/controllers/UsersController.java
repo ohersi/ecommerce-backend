@@ -49,9 +49,10 @@ public class UsersController {
 
     // UPDATE USER
     @PutMapping("user/{id}")
-    public ResponseEntity<Users> updateUser(@PathVariable int id, @RequestBody Users user) {
+    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody Users user) {
         usersService.updateUser(id, user);
-        return new ResponseEntity<Users>(usersService.updateUser(id, user), HttpStatus.CREATED);
+        String message = "User has been updated";
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     //DELETE USER

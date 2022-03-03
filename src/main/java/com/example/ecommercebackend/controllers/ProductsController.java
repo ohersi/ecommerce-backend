@@ -43,16 +43,18 @@ public class ProductsController {
 
 //    CREATE PRODUCT
     @PostMapping("addproduct")
-    public ResponseEntity<Products> newProduct(@RequestBody ProductsDTO productsDTO) {
+    public ResponseEntity<String> newProduct(@RequestBody ProductsDTO productsDTO) {
         productsService.newProduct(productsDTO);
-        return new ResponseEntity<>(productsService.newProduct(productsDTO), HttpStatus.CREATED);
+        String message = "Product has been added";
+        return new ResponseEntity<>( message, HttpStatus.CREATED);
     }
 
 //    UPDATE PRODUCT
     @PutMapping("products/{id}")
-    public ResponseEntity<Products> updateProduct(@PathVariable int id, @RequestBody ProductsDTO productsDTO) {
+    public ResponseEntity<String> updateProduct(@PathVariable int id, @RequestBody ProductsDTO productsDTO) {
         productsService.updateProducts(id, productsDTO);
-        return new ResponseEntity<Products>(productsService.updateProducts(id, productsDTO), HttpStatus.CREATED);
+        String message = "Product has been updated";
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
 //    DELETE PRODUCT

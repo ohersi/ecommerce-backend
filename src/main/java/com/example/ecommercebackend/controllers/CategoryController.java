@@ -43,9 +43,10 @@ public class CategoryController {
 
 //    UPDATE CATEGORY
     @PutMapping("category/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable int id, @RequestBody Category category) {
+    public ResponseEntity<String> updateCategory(@PathVariable int id, @RequestBody Category category) {
             categoryService.updateCategory(id, category);
-        return new ResponseEntity<Category>(categoryService.updateCategory(id, category), HttpStatus.CREATED);
+        String message = "Category has been updated";
+        return new ResponseEntity<String>(message, HttpStatus.CREATED);
     }
 
 //    DELETE CATEGORY

@@ -29,9 +29,10 @@ public class CartController {
 
 //    ADD TO CART
     @PostMapping("addtocart")
-    public ResponseEntity<Cart> addToCart(@RequestBody CartDTO cartDTO) {
+    public ResponseEntity<String> addToCart(@RequestBody CartDTO cartDTO) {
         cartService.addToCart(cartDTO);
-        return new ResponseEntity<>(cartService.addToCart(cartDTO), HttpStatus.CREATED);
+        String message = "Item has been added to cart";
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
 //    UPDATE CART
