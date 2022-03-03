@@ -7,11 +7,13 @@ import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.CartRepository;
+import com.example.ecommercebackend.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartService {
@@ -40,10 +42,14 @@ public class CartService {
         return cartRepo.save(cart);
     }
 
-    public Cart deleteFromCart(int id, CartDTO cartDTO) {
+    public Cart deleteFromCart(int id, Users user) {
         Cart cart = cartRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
-        //TODO: Prevent unauthorized user access for deleting other carts
+//        System.out.println("Cart User from cart.getUsers_id: ->" + cart.getUsers_id().getId());
+//        System.out.println("Cart User from user.getUsers_id: ->" + user.getId());
+        if(cart.getUsers_id().getId() != user.getId()){
+            throw new ResourceNotFoundException("Invalid user access; cannot edit cart.");
+        }
         cartRepo.delete(cart);
         return cart;
     }

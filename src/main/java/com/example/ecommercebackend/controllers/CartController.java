@@ -4,6 +4,7 @@ import com.example.ecommercebackend.dto.CartDTO;
 import com.example.ecommercebackend.models.Cart;
 import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
+import com.example.ecommercebackend.repositories.UsersRepository;
 import com.example.ecommercebackend.service.CartService;
 import com.example.ecommercebackend.service.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -20,6 +22,10 @@ public class CartController {
 
     @Autowired
     CartService cartService;
+    @Autowired
+    UsersService usersService;
+    @Autowired
+    UsersRepository usersRepo;
 
 //    GET CART ITEMS
     @GetMapping("cart")
@@ -37,8 +43,9 @@ public class CartController {
 
 //    UPDATE CART
     @DeleteMapping("deleteitem/{id}")
-    public ResponseEntity<String> deleteFromCart(@PathVariable int id, CartDTO cartDTO) {
-        cartService.deleteFromCart(id, cartDTO);
+    public ResponseEntity<String> deleteFromCart(@PathVariable int id, @RequestParam("userID") int userID) {
+        Users foundUser = usersService.getUsersById(userID);
+        cartService.deleteFromCart(id, foundUser);
         String message = "Item has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
