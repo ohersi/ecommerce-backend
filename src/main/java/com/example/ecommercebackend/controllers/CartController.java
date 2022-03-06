@@ -57,6 +57,4 @@ public class CartController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-//    TODO: DELETE ENTIRE CART
-
 }
