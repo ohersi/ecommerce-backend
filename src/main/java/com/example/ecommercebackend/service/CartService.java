@@ -31,15 +31,26 @@ public class CartService {
 
     public Cart addToCart(CartDTO cartDTO) {
         Cart cart = new Cart();
-        Users foundUsers = usersService.getUsersById(cartDTO.getUsers_id());
         Products foundProducts = productsService.getProductsById(cartDTO.getProducts_id());
-        cart.setUsers_id(foundUsers);
+        if (cartDTO.getUsers_id() != 0){
+            Users foundUsers = usersService.getUsersById(cartDTO.getUsers_id());
+            cart.setUsers_id(foundUsers);
+        }
         cart.setProduct_id(foundProducts);
         cart.setQuantity(cartDTO.getQuantity());
         cart.setDate_added(cartDTO.getDate_added());
         cart.setDate_updated(cartDTO.getDate_updated());
 
         return cartRepo.save(cart);
+    }
+
+    public Cart updateCart(int id, CartDTO cartDTO) {
+        Cart foundCart = cartRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart not found."));
+        foundCart.setQuantity(cartDTO.getQuantity());
+        foundCart.setDate_updated(cartDTO.getDate_updated());
+        Cart updateCart = cartRepo.save(foundCart);
+        return updateCart;
     }
 
     public Cart deleteFromCart(int id, Users user) {
@@ -53,4 +64,6 @@ public class CartService {
         cartRepo.delete(cart);
         return cart;
     }
+
+
 }

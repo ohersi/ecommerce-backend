@@ -1,8 +1,8 @@
 package com.example.ecommercebackend.controllers;
 
 import com.example.ecommercebackend.dto.CartDTO;
+import com.example.ecommercebackend.dto.ProductsDTO;
 import com.example.ecommercebackend.models.Cart;
-import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
 import com.example.ecommercebackend.service.CartService;
@@ -13,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
@@ -41,7 +40,15 @@ public class CartController {
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
-//    UPDATE CART
+//    UPDATE ITEM IN CART
+    @PutMapping("updatecart/{id}")
+    public ResponseEntity<String> updateCart(@PathVariable int id, @RequestBody CartDTO cartDTO) {
+        cartService.updateCart(id, cartDTO);
+        String message = "Cart has been updated";
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+//    DELETE ITEM FROM CART
     @DeleteMapping("deleteitem/{id}")
     public ResponseEntity<String> deleteFromCart(@PathVariable int id, @RequestParam("userID") int userID) {
         Users foundUser = usersService.getUsersById(userID);
@@ -49,5 +56,7 @@ public class CartController {
         String message = "Item has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+//    TODO: DELETE ENTIRE CART
 
 }
