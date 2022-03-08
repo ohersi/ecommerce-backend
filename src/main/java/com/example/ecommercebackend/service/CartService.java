@@ -53,14 +53,14 @@ public class CartService {
         return updateCart;
     }
 
-    public Cart deleteFromCart(int id, Users user) {
+    public Cart deleteFromCart(int id) {
         Cart cart = cartRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Item not found"));
 //        System.out.println("Cart User from cart.getUsers_id: ->" + cart.getUsers_id().getId());
 //        System.out.println("Cart User from user.getUsers_id: ->" + user.getId());
-        if(cart.getUsers_id().getId() != user.getId()){
-            throw new ResourceNotFoundException("Invalid user access; cannot edit cart.");
-        }
+//        if(cart.getUsers_id().getId() != user.getId()){
+//            throw new ResourceNotFoundException("Invalid user access; cannot edit cart.");
+//        }
         cartRepo.delete(cart);
         return cart;
     }

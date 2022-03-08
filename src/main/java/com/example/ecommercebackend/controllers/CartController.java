@@ -50,9 +50,9 @@ public class CartController {
 
 //    DELETE ITEM FROM CART
     @DeleteMapping("deleteitem/{id}")
-    public ResponseEntity<String> deleteFromCart(@PathVariable int id, @RequestParam("userID") int userID) {
-        Users foundUser = usersService.getUsersById(userID);
-        cartService.deleteFromCart(id, foundUser);
+    public ResponseEntity<String> deleteFromCart(@PathVariable int id) {
+//        Users foundUser = usersService.getUsersById(userID);
+        cartService.deleteFromCart(id);
         String message = "Item has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
