@@ -1,7 +1,6 @@
 package com.example.ecommercebackend.service;
 
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
-import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +26,29 @@ public class UsersService {
     }
 
     public Users newUser(Users user) {
-        return usersRepo.save(user);
+        Users newUser = new Users();
+        Users foundUserName = usersRepo.findByUsername(user.getUsername());
+        Users foundUserEmail = usersRepo.findByEmail(user.getEmail());
+        if(foundUserName != null) {
+            throw new ResourceNotFoundException("User already exist");
+        }
+        if(foundUserEmail !=null) {
+            throw new ResourceNotFoundException("Email already in use");
+        }
+        newUser.setUsername(user.getUsername());
+        newUser.setFirstname(user.getFirstname());
+        newUser.setLastname(user.getLastname());
+        newUser.setEmail(user.getEmail());
+        newUser.setPassword(user.getPassword());
+
+        Users newUserFinal = usersRepo.save(newUser);
+        return newUserFinal;
     }
 
     public Users signInUser(Users user) {
         Users signInUser = usersRepo.findByUsername(user.getUsername());
-        if(signInUser.getEmail().isEmpty()) {
-            System.out.println(new ResourceNotFoundException("Invalid information"));
+        if(signInUser.getUsername().isEmpty()) {
+           throw new ResourceNotFoundException("Invalid information");
         }
         if(!signInUser.getPassword().equals(user.getPassword())){
             throw new ResourceNotFoundException("Invalid information");
