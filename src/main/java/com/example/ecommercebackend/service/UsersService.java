@@ -4,21 +4,37 @@ import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UsersService {
+public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepo;
+    private final static String USER_NOT_FOUND = "User '%s' was not found";
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UsersService(UsersRepository usersRepo) {
+    public UsersService(UsersRepository usersRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.usersRepo = usersRepo;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     public List<Users> getAllUsers() {
         return usersRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Users users = usersRepo.findByUsername(username);
+                if (users.getUsername().isEmpty()) {
+                    throw new UsernameNotFoundException(String.format(USER_NOT_FOUND, username));
+                }
+        return users;
     }
 
     public Users getUsersById(int id) {
@@ -31,6 +47,7 @@ public class UsersService {
         Users newUser = new Users();
         Users foundUserName = usersRepo.findByUsername(user.getUsername());
         Users foundUserEmail = usersRepo.findByEmail(user.getEmail());
+        String bCryptPassword = bCryptPasswordEncoder.encode(user.getPassword());
         if(foundUserName != null) {
             throw new ResourceNotFoundException("User already exist");
         }
@@ -41,7 +58,7 @@ public class UsersService {
         newUser.setFirstname(user.getFirstname());
         newUser.setLastname(user.getLastname());
         newUser.setEmail(user.getEmail());
-        newUser.setPassword(user.getPassword());
+        newUser.setPassword(bCryptPassword);
 
         Users newUserFinal = usersRepo.save(newUser);
         return newUserFinal;
@@ -77,4 +94,6 @@ public class UsersService {
         usersRepo.deleteById(id);
         return users;
     }
+
+
 }
