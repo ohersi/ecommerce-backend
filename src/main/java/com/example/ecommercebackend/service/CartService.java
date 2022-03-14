@@ -3,27 +3,28 @@ package com.example.ecommercebackend.service;
 import com.example.ecommercebackend.dto.CartDTO;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Cart;
-import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.CartRepository;
-import com.example.ecommercebackend.repositories.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CartService {
 
-    @Autowired
-    CartRepository cartRepo;
-    @Autowired
-    ProductsService productsService;
-    @Autowired
-    UsersService usersService;
+    private final CartRepository cartRepo;
+
+    private final ProductsService productsService;
+
+    private final UsersService usersService;
+
+    public CartService(CartRepository cartRepo, ProductsService productsService, UsersService usersService) {
+        this.cartRepo = cartRepo;
+        this.productsService = productsService;
+        this.usersService = usersService;
+    }
 
     public List<Cart> getAllCartItems() {
         return cartRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));

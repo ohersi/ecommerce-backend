@@ -3,7 +3,6 @@ package com.example.ecommercebackend.service;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,11 @@ import java.util.List;
 @Service
 public class UsersService {
 
-    @Autowired
-    private UsersRepository usersRepo;
+    private final UsersRepository usersRepo;
+
+    public UsersService(UsersRepository usersRepo) {
+        this.usersRepo = usersRepo;
+    }
 
     public List<Users> getAllUsers() {
         return usersRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));

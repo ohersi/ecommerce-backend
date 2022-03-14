@@ -1,13 +1,10 @@
 package com.example.ecommercebackend.controllers;
 
 import com.example.ecommercebackend.dto.CartDTO;
-import com.example.ecommercebackend.dto.ProductsDTO;
 import com.example.ecommercebackend.models.Cart;
-import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
 import com.example.ecommercebackend.service.CartService;
 import com.example.ecommercebackend.service.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,14 +16,20 @@ import java.util.List;
 @RequestMapping("api/v1")
 public class CartController {
 
-    @Autowired
-    CartService cartService;
-    @Autowired
-    UsersService usersService;
-    @Autowired
-    UsersRepository usersRepo;
 
-//    GET CART ITEMS
+    private final CartService cartService;
+
+    private final UsersService usersService;
+
+    private final UsersRepository usersRepo;
+
+    public CartController(CartService cartService, UsersService usersService, UsersRepository usersRepo) {
+        this.cartService = cartService;
+        this.usersService = usersService;
+        this.usersRepo = usersRepo;
+    }
+
+    //    GET CART ITEMS
     @GetMapping("cart")
     public List<Cart> getAllCartItems() {
         return cartService.getAllCartItems();

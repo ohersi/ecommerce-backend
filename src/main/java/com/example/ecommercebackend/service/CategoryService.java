@@ -3,7 +3,6 @@ package com.example.ecommercebackend.service;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.repositories.CategoryRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +11,13 @@ import java.util.List;
 @Service
 public class CategoryService {
 
-    @Autowired
-    private CategoryRepository categoryRepo;
+    private final CategoryRepository categoryRepo;
 
-//    GET ALL CATEGORIES
+    public CategoryService(CategoryRepository categoryRepo) {
+        this.categoryRepo = categoryRepo;
+    }
+
+    //    GET ALL CATEGORIES
     public List<Category> getAllCategories() {
         return categoryRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }

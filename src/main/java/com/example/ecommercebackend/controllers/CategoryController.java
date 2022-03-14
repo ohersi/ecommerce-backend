@@ -1,12 +1,7 @@
 package com.example.ecommercebackend.controllers;
 
-import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Category;
-import com.example.ecommercebackend.models.Users;
-import com.example.ecommercebackend.repositories.CategoryRepository;
 import com.example.ecommercebackend.service.CategoryService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +13,13 @@ import java.util.List;
 @RequestMapping("api/v1")
 public class CategoryController {
 
-    @Autowired
-//    private CategoryRepository categoryRepo;
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
-//    GET ALL CATEGORIES
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
+
+    //    GET ALL CATEGORIES
     @GetMapping("categories")
     public List<Category> getAllCategories() {
         return categoryService.getAllCategories();

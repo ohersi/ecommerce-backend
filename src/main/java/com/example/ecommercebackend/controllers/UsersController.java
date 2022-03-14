@@ -1,11 +1,7 @@
 package com.example.ecommercebackend.controllers;
 
-import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Users;
-import com.example.ecommercebackend.repositories.UsersRepository;
 import com.example.ecommercebackend.service.UsersService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +13,13 @@ import java.util.List;
 @RequestMapping("/api/v1")
 public class UsersController {
 
-    @Autowired
-//    private UsersRepository usersRepo;
-    UsersService usersService;
+    private final UsersService usersService;
 
-//    GET ALL USERS
+    public UsersController(UsersService usersService) {
+        this.usersService = usersService;
+    }
+
+    //    GET ALL USERS
     @GetMapping("allusers")
     public List<Users> getAllUsers() {
         return usersService.getAllUsers();

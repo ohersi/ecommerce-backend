@@ -1,27 +1,26 @@
 package com.example.ecommercebackend.controllers;
 
 import com.example.ecommercebackend.dto.ProductsDTO;
-import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
-import com.example.ecommercebackend.repositories.CategoryRepository;
 import com.example.ecommercebackend.service.ProductsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin
 @RequestMapping("api/v1")
 public class ProductsController {
 
-    @Autowired
-    ProductsService productsService;
+    private final ProductsService productsService;
 
-//    GET ALL PRODUCTS
+    public ProductsController(ProductsService productsService) {
+        this.productsService = productsService;
+    }
+
+    //    GET ALL PRODUCTS
     @GetMapping("collection/all")
     public List<Products> getAllProducts() {
         return productsService.getAllProducts();

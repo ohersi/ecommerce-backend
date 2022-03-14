@@ -6,7 +6,6 @@ import com.example.ecommercebackend.models.Category;
 import com.example.ecommercebackend.models.Products;
 import com.example.ecommercebackend.repositories.CategoryRepository;
 import com.example.ecommercebackend.repositories.ProductsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +14,14 @@ import java.util.List;
 @Service
 public class ProductsService {
 
-    @Autowired
-    private ProductsRepository productsRepo;
-    @Autowired
-    private CategoryRepository categoryRepo;
+    private final ProductsRepository productsRepo;
+
+    private final CategoryRepository categoryRepo;
+
+    public ProductsService(ProductsRepository productsRepo, CategoryRepository categoryRepo) {
+        this.productsRepo = productsRepo;
+        this.categoryRepo = categoryRepo;
+    }
 
     public List<Products> getAllProducts() {
         return productsRepo.findAll(Sort.by(Sort.Direction.ASC, "id"));
