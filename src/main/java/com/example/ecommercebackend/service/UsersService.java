@@ -31,7 +31,7 @@ public class UsersService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users users = usersRepo.findByUsername(username);
-                if (users.getUsername().isEmpty()) {
+                if (users == null) {
                     throw new UsernameNotFoundException(String.format(USER_NOT_FOUND, username));
                 }
         return users;
@@ -65,14 +65,11 @@ public class UsersService implements UserDetailsService {
     }
 
     public Users signInUser(Users user) {
-        Users signInUser = usersRepo.findByUsername(user.getUsername());
-        if(signInUser.getUsername().isEmpty()) {
-           throw new ResourceNotFoundException("Invalid information");
-        }
-        if(!signInUser.getPassword().equals(user.getPassword())){
+        UserDetails signInUser = loadUserByUsername(user.getUsername());
+        if(!bCryptPasswordEncoder.matches(user.getPassword(), signInUser.getPassword())) {
             throw new ResourceNotFoundException("Invalid information");
         }
-        return signInUser;
+        return (Users) signInUser;
     }
 
     public Users updateUser(int id, Users newUserInfo) {
