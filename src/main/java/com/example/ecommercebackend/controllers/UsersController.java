@@ -35,8 +35,11 @@ public class UsersController {
 
 //  SIGN UP
     @PostMapping("signup")
-    public Users newUser(@RequestBody Users user) {
-        return usersService.newUser(user);
+    public ResponseEntity<String> newUser(@RequestBody Users user) {
+        usersService.newUser(user);
+        String message = "User has been created";
+        return new ResponseEntity<>( message, HttpStatus.CREATED);
+
     }
 
 //  SIGN IN

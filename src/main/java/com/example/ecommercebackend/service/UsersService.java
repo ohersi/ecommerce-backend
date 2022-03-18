@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service;
 
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
+import com.example.ecommercebackend.models.AuthToken;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
 import org.springframework.data.domain.Sort;
@@ -10,17 +11,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepo;
+    private final AuthTokenService authTokenService;
     private final static String USER_NOT_FOUND = "User '%s' was not found";
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UsersService(UsersRepository usersRepo, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UsersService(UsersRepository usersRepo, AuthTokenService authTokenService, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.usersRepo = usersRepo;
+        this.authTokenService = authTokenService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
@@ -42,7 +48,7 @@ public class UsersService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return users;
     }
-
+    @Transactional
     public Users newUser(Users user) {
         Users newUser = new Users();
         Users foundUserName = usersRepo.findByUsername(user.getUsername());
@@ -61,6 +67,13 @@ public class UsersService implements UserDetailsService {
         newUser.setPassword(bCryptPassword);
 
         Users newUserFinal = usersRepo.save(newUser);
+        String token = UUID.randomUUID().toString();
+        AuthToken authToken = new AuthToken(token,
+                LocalDateTime.now(),
+                newUser
+                );
+        authTokenService.saveAuthToken(authToken);
+
         return newUserFinal;
     }
 
