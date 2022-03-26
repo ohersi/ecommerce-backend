@@ -17,19 +17,19 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name="products_id")
+    @JoinColumn(nullable = false, name = "products_id")
     private Products products_id;
     @OneToOne
     @JoinColumn(name= "users_id")
-    Users users_id;
-    @Column
+    Users users;
+    @Column(nullable = false)
     private int quantity;
-    @Column
+    @Column(name = "date_added")
     @CreationTimestamp
-    private Timestamp date_added;
-    @Column
+    private Timestamp dateAdded;
+    @Column (name= "date_updated")
     @UpdateTimestamp
-    private Timestamp date_updated;
+    private Timestamp dateUpdated;
 
     public int getId() {
         return id;
@@ -43,12 +43,12 @@ public class Cart {
         this.products_id = products_id;
     }
 
-    public Users getUsers_id() {
-        return users_id;
+    public Users getUsers() {
+        return users;
     }
 
-    public void setUsers_id(Users users_id) {
-        this.users_id = users_id;
+    public void setUsers(Users users_id) {
+        this.users = users_id;
     }
 
     public int getQuantity() {
@@ -59,19 +59,19 @@ public class Cart {
         this.quantity = quantity;
     }
 
-    public Timestamp getDate_added() {
-        return date_added;
+    public Timestamp getDateAdded() {
+        return dateAdded;
     }
 
-    public void setDate_added(Timestamp date_added) {
-        this.date_added = date_added;
+    public void setDateAdded(Timestamp date_added) {
+        this.dateAdded = date_added;
     }
 
-    public Timestamp getDate_updated() {
-        return date_updated;
+    public Timestamp getDateUpdated() {
+        return dateUpdated;
     }
 
-    public void setDate_updated(Timestamp date_updated) {
-        this.date_updated = date_updated;
+    public void setDateUpdated(Timestamp date_updated) {
+        this.dateUpdated = date_updated;
     }
 }
