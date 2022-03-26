@@ -20,9 +20,9 @@ public class CartDTO {
 
     private int quantity;
 
-    private Timestamp dateAdded;
+    private Timestamp date_added;
 
-    private Timestamp dateUpdated;
+    private Timestamp date_updated;
 
     public CartDTO() {
     }
@@ -59,19 +59,19 @@ public class CartDTO {
         this.quantity = quantity;
     }
 
-    public Timestamp getDateAdded() {
-        return dateAdded;
+    public Timestamp getDate_added() {
+        return date_added;
     }
 
-    public void setDateAdded(Timestamp date_added) {
-        this.dateAdded = date_added;
+    public void setDate_added(Timestamp date_added) {
+        this.date_added = date_added;
     }
 
-    public Timestamp getDateUpdated() {
-        return dateUpdated;
+    public Timestamp getDate_updated() {
+        return date_updated;
     }
 
-    public void setDateUpdated(Timestamp date_updated) {
-        this.dateUpdated = date_updated;
+    public void setDate_updated(Timestamp date_updated) {
+        this.date_updated = date_updated;
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -17,14 +16,12 @@ import java.util.List;
 @RequestMapping("api/v1")
 public class CartController {
 
+
     private final CartService cartService;
 
     private final UsersService usersService;
 
     private final UsersRepository usersRepo;
-
-    private String HEADER = "Authorization";
-    private String TOKEN_PREFIX = "Bearer ";
 
     public CartController(CartService cartService, UsersService usersService, UsersRepository usersRepo) {
         this.cartService = cartService;
@@ -32,47 +29,32 @@ public class CartController {
         this.usersRepo = usersRepo;
     }
 
-    public String getTokenFromHeader(HttpServletRequest request) {
-        String authHeader = request.getHeader(HEADER);
-        String JWT = null;
-        if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) {
-            JWT = authHeader.substring(7);
-        }
-        return JWT;
-    }
-
-//    GET ALL CART ITEMS
-    @GetMapping("allcartitems")
+    //    GET CART ITEMS
+    @GetMapping("cart")
     public List<Cart> getAllCartItems() {
         return cartService.getAllCartItems();
     }
 
-//    GET CART ITEMS BY USER
-    @GetMapping("cart")
-    public List<Cart> getCartItemsByUser(HttpServletRequest request) {
-        return cartService.getCartItemsByUser(getTokenFromHeader(request));
-    }
-
 //    ADD TO CART
     @PostMapping("addtocart")
-    public ResponseEntity<String> addToCart(HttpServletRequest request, @RequestBody CartDTO cartDTO) {
-        cartService.addToCart(getTokenFromHeader(request), cartDTO);
+    public ResponseEntity<String> addToCart(@RequestBody CartDTO cartDTO) {
+        cartService.addToCart(cartDTO);
         String message = "Item has been added to cart";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
 //    UPDATE ITEM IN CART
     @PutMapping("updatecart/{id}")
-    public ResponseEntity<String> updateCart(HttpServletRequest request, @PathVariable int id, @RequestBody CartDTO cartDTO) {
-        cartService.updateCart(getTokenFromHeader(request), id, cartDTO);
+    public ResponseEntity<String> updateCart(@PathVariable int id, @RequestBody CartDTO cartDTO) {
+        cartService.updateCart(id, cartDTO);
         String message = "Cart has been updated";
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
 //    DELETE ITEM FROM CART
     @DeleteMapping("deleteitem/{id}")
-    public ResponseEntity<String> deleteFromCart(HttpServletRequest request, @PathVariable int id) {
-        cartService.deleteFromCart(getTokenFromHeader(request), id);
+    public ResponseEntity<String> deleteFromCart(@PathVariable int id) {
+        cartService.deleteFromCart(id);
         String message = "Item has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

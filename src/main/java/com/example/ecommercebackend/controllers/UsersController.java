@@ -1,15 +1,11 @@
 package com.example.ecommercebackend.controllers;
 
-import com.example.ecommercebackend.dto.UsersDTO;
 import com.example.ecommercebackend.models.Users;
-import com.example.ecommercebackend.security.JWTUtility;
 import com.example.ecommercebackend.service.UsersService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -18,23 +14,9 @@ import java.util.List;
 public class UsersController {
 
     private final UsersService usersService;
-    private final JWTUtility jwtUtility;
 
-    private String HEADER = "Authorization";
-    private String TOKEN_PREFIX = "Bearer ";
-
-    public UsersController(UsersService usersService, JWTUtility jwtUtility) {
+    public UsersController(UsersService usersService) {
         this.usersService = usersService;
-        this.jwtUtility = jwtUtility;
-    }
-
-    public String getTokenFromHeader(HttpServletRequest request) {
-        String authHeader = request.getHeader(HEADER);
-        String JWT = null;
-        if (authHeader != null && authHeader.startsWith(TOKEN_PREFIX)) {
-            JWT = authHeader.substring(7);
-        }
-        return JWT;
     }
 
     //    GET ALL USERS
@@ -47,37 +29,39 @@ public class UsersController {
     @GetMapping("user/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Users> getUsersById(@PathVariable int id) {
-        Users response = usersService.getUsersById(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        usersService.getUsersById(id);
+        return ResponseEntity.ok(usersService.getUsersById(id));
     }
 
-//  REGISTER
-    @PostMapping("register")
-    public UsersDTO newUser(@RequestBody Users users) {
-        UsersDTO response = usersService.newUser(users);
-        return response;
+//  SIGN UP
+    @PostMapping("signup")
+    public ResponseEntity<String> newUser(@RequestBody Users user) {
+        usersService.newUser(user);
+        String message = "User has been created";
+        return new ResponseEntity<>( message, HttpStatus.CREATED);
+
     }
 
-//  LOG IN
-    @PostMapping("login")
-    public UsersDTO signInUser(@RequestBody UsersDTO usersDTO) throws BadCredentialsException {
-        UsersDTO response = usersService.signInUser(usersDTO);
-        return response;
+//  SIGN IN
+    @PostMapping("signin")
+    public Users signInUser(@RequestBody Users user) {
+        return usersService.signInUser(user);
     }
 
     // UPDATE USER
-    @PutMapping("updateuser")
-    public ResponseEntity<String> updateUser(HttpServletRequest request, @RequestBody Users user) {
-        usersService.updateUser(getTokenFromHeader(request), user);
+    @PutMapping("user/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable int id, @RequestBody Users user) {
+        usersService.updateUser(id, user);
         String message = "User has been updated";
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
     //DELETE USER
-    @DeleteMapping("deleteuser")
-    public ResponseEntity<String> deleteUser(HttpServletRequest request, @RequestBody UsersDTO usersDTO) {
-        usersService.deleteUser(getTokenFromHeader(request), usersDTO);
+    @DeleteMapping("user/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable int id) {
+        usersService.deleteUser(id);
         String message = "User has been deleted";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
 }

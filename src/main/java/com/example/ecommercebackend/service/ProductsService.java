@@ -35,8 +35,8 @@ public class ProductsService {
 
     public List<Products> getProductByName(String name) {
         List<Products> product = productsRepo.findByNameIgnoreCase(name);
-        if(product == null) {
-            throw new ResourceNotFoundException("Product(s): " + name + " not found");
+        if(product.isEmpty()) {
+            System.out.println(new ResourceNotFoundException("Product(s): " + name + " not found"));
         }
         return productsRepo.findByNameIgnoreCase(name);
     }
