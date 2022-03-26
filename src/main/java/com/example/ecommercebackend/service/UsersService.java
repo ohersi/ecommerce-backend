@@ -1,33 +1,46 @@
 package com.example.ecommercebackend.service;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.ecommercebackend.dto.UsersDTO;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
-import com.example.ecommercebackend.models.AuthToken;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.repositories.UsersRepository;
+import com.example.ecommercebackend.security.JWTUtility;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepo;
-    private final AuthTokenService authTokenService;
+    private final AuthenticationManager authenticationManager;
+    private final JWTUtility jwtUtility;
     private final static String USER_NOT_FOUND = "User '%s' was not found";
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UsersService(UsersRepository usersRepo, AuthTokenService authTokenService, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UsersService(UsersRepository usersRepo, @Lazy AuthenticationManager authenticationManager, JWTUtility jwtUtility, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.usersRepo = usersRepo;
-        this.authTokenService = authTokenService;
+        this.authenticationManager = authenticationManager;
+        this.jwtUtility = jwtUtility;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+    }
+
+    public Boolean tokenUserMatchesUser(String token, Users user) {
+        String tokenUsername = jwtUtility.validateToken(token);
+        if (!tokenUsername.equals(user.getUsername())) {
+            throw new JWTVerificationException("JWT Token does not contain same user");
+        }
+        return true;
     }
 
     public List<Users> getAllUsers() {
@@ -48,9 +61,8 @@ public class UsersService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return users;
     }
-    @Transactional
-    public Users newUser(Users user) {
-        Users newUser = new Users();
+
+    public UsersDTO newUser(Users user) {
         Users foundUserName = usersRepo.findByUsername(user.getUsername());
         Users foundUserEmail = usersRepo.findByEmail(user.getEmail());
         String bCryptPassword = bCryptPasswordEncoder.encode(user.getPassword());
@@ -60,6 +72,7 @@ public class UsersService implements UserDetailsService {
         if(foundUserEmail !=null) {
             throw new ResourceNotFoundException("Email already in use");
         }
+        Users newUser = new Users();
         newUser.setUsername(user.getUsername());
         newUser.setFirstname(user.getFirstname());
         newUser.setLastname(user.getLastname());
@@ -67,27 +80,45 @@ public class UsersService implements UserDetailsService {
         newUser.setPassword(bCryptPassword);
 
         Users newUserFinal = usersRepo.save(newUser);
-        String token = UUID.randomUUID().toString();
-        AuthToken authToken = new AuthToken(token,
-                LocalDateTime.now(),
-                newUser
-                );
-        authTokenService.saveAuthToken(authToken);
+        String token = jwtUtility.generateToken(loadUserByUsername(newUser.getUsername()));
+        UsersDTO usersResponse = new UsersDTO();
+        usersResponse.setUsername(newUserFinal.getUsername());
+        usersResponse.setEmail(newUserFinal.getEmail());
+        usersResponse.setToken(token);
 
-        return newUserFinal;
+        return usersResponse;
     }
 
-    public Users signInUser(Users user) {
-        UserDetails signInUser = loadUserByUsername(user.getUsername());
-        if(!bCryptPasswordEncoder.matches(user.getPassword(), signInUser.getPassword())) {
+    public UsersDTO signInUser(UsersDTO usersDTO) throws BadCredentialsException {
+        UserDetails signInUser = loadUserByUsername(usersDTO.getUsername());
+        Users user = usersRepo.findByUsername(signInUser.getUsername());
+        if(!bCryptPasswordEncoder.matches(usersDTO.getPassword(), signInUser.getPassword())) {
             throw new ResourceNotFoundException("Invalid information");
         }
-        return (Users) signInUser;
+        try{
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(usersDTO.getUsername(), usersDTO.getPassword());
+            authenticationManager.authenticate(authToken);
+        }
+        catch (BadCredentialsException e) {
+            throw new BadCredentialsException("Invalid credentials", e);
+        }
+        String token = jwtUtility.generateToken(signInUser);
+        UsersDTO usersResponse = new UsersDTO();
+        usersResponse.setUsername(signInUser.getUsername());
+        usersResponse.setEmail(user.getEmail());
+        usersResponse.setToken(token);
+        return usersResponse;
     }
 
-    public Users updateUser(int id, Users newUserInfo) {
-        Users foundUser = usersRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found."));
+    public Users updateUser(String token, Users newUserInfo) {
+        String tokenUsername = jwtUtility.validateToken(token);
+        Users foundUser = usersRepo.findByUsername(tokenUsername);
+        if (foundUser == null) {
+            throw new ResourceNotFoundException("User not found.");
+        }
+        if (!tokenUserMatchesUser(token, newUserInfo)) {
+            throw new ResourceNotFoundException("Invalid token");
+        }
         foundUser.setUsername(newUserInfo.getUsername());
         foundUser.setFirstname(newUserInfo.getFirstname());
         foundUser.setLastname(newUserInfo.getLastname());
@@ -98,12 +129,16 @@ public class UsersService implements UserDetailsService {
         return updatedUser;
     }
 
-    public Users deleteUser(int id) {
-        Users users = usersRepo.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        usersRepo.deleteById(id);
-        return users;
+    public Users deleteUser(String token, UsersDTO usersDTO) {
+        String tokenUsername = jwtUtility.validateToken(token);
+        Users foundUser = usersRepo.findByUsername(tokenUsername);
+        if (foundUser == null) {
+            throw new ResourceNotFoundException("User not found.");
+        }
+        if (!foundUser.getUsername().equals(usersDTO.getUsername())) {
+            throw new ResourceNotFoundException("Invalid user deletion attempt");
+        }
+        usersRepo.deleteById(foundUser.getId());
+        return foundUser;
     }
-
-
 }

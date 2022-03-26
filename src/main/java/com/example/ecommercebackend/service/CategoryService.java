@@ -25,8 +25,8 @@ public class CategoryService {
 //    GET CATEGORY BY NAME
     public List<Category> getCategoryByName(String name) {
         List<Category> categories = categoryRepo.findByNameIgnoreCase(name);
-        if(categories.isEmpty()) {
-            System.out.println(new ResourceNotFoundException("Category " + name + " not found"));
+        if(categories== null) {
+            throw new ResourceNotFoundException("Category " + name + " not found");
         }
         return categoryRepo.findByNameIgnoreCase(name);
     }
