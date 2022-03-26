@@ -11,12 +11,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JWTUtility {
 
-    @Value("${SECRET_KEY}")
-    private String SECRET_KEY;
+    private String SECRET_KEY = "MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIhf3S64keuYHkLkB4IRtJQ1S2cE6F7hJE/I6xBVlMYANJggJUQUKyrfuGcGQpd6gb2ifk4XACOjRdYJx4QV/7kCAwEAAQ==";
 
     public String generateToken(UserDetails userDetails) throws  IllegalArgumentException, JWTDecodeException {
         return JWT.create()
