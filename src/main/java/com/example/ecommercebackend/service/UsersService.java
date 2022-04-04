@@ -1,6 +1,7 @@
 package com.example.ecommercebackend.service;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.example.ecommercebackend.dto.ProfileDTO;
 import com.example.ecommercebackend.dto.UsersDTO;
 import com.example.ecommercebackend.exceptions.ResourceNotFoundException;
 import com.example.ecommercebackend.models.Users;
@@ -62,6 +63,20 @@ public class UsersService implements UserDetailsService {
         return users;
     }
 
+    public ProfileDTO getUserInfoByToken (String token) {
+        String tokenUsername = jwtUtility.validateToken(token);
+        Users foundUser = usersRepo.findByUsername(tokenUsername);
+        if (foundUser == null) {
+            throw new ResourceNotFoundException("User not found.");
+        }
+        ProfileDTO profileResponse = new ProfileDTO();
+        profileResponse.setUsername(foundUser.getUsername());
+        profileResponse.setFirstname(foundUser.getFirstname());
+        profileResponse.setLastname(foundUser.getLastname());
+        profileResponse.setEmail(foundUser.getEmail());
+        return profileResponse;
+    }
+
     public UsersDTO newUser(Users user) {
         Users foundUserName = usersRepo.findByUsername(user.getUsername());
         Users foundUserEmail = usersRepo.findByEmail(user.getEmail());
@@ -116,14 +131,21 @@ public class UsersService implements UserDetailsService {
         if (foundUser == null) {
             throw new ResourceNotFoundException("User not found.");
         }
-        if (!tokenUserMatchesUser(token, newUserInfo)) {
-            throw new ResourceNotFoundException("Invalid token");
+        if (newUserInfo.getUsername() != null) {
+            foundUser.setUsername(newUserInfo.getUsername());
         }
-        foundUser.setUsername(newUserInfo.getUsername());
-        foundUser.setFirstname(newUserInfo.getFirstname());
-        foundUser.setLastname(newUserInfo.getLastname());
-        foundUser.setEmail(newUserInfo.getEmail());
-        foundUser.setPassword(newUserInfo.getPassword());
+        if (newUserInfo.getFirstname() != null) {
+            foundUser.setFirstname(newUserInfo.getFirstname());
+        }
+        if (newUserInfo.getLastname() != null) {
+            foundUser.setLastname(newUserInfo.getLastname());
+        }
+        if (newUserInfo.getEmail() != null) {
+            foundUser.setEmail(newUserInfo.getEmail());
+        }
+        if (newUserInfo.getPassword() != null) {
+            foundUser.setPassword(newUserInfo.getPassword());
+        }
 
         Users updatedUser = usersRepo.save(foundUser);
         return updatedUser;

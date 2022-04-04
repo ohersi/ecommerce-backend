@@ -1,5 +1,6 @@
 package com.example.ecommercebackend.controllers;
 
+import com.example.ecommercebackend.dto.ProfileDTO;
 import com.example.ecommercebackend.dto.UsersDTO;
 import com.example.ecommercebackend.models.Users;
 import com.example.ecommercebackend.security.JWTUtility;
@@ -37,7 +38,7 @@ public class UsersController {
         return JWT;
     }
 
-    //    GET ALL USERS
+//    GET ALL USERS
     @GetMapping("allusers")
     public List<Users> getAllUsers() {
         return usersService.getAllUsers();
@@ -51,21 +52,29 @@ public class UsersController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-//  REGISTER
+//    GET USER BY TOKEN
+    @GetMapping("profile")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<ProfileDTO> getUsersById(HttpServletRequest request) {
+        ProfileDTO response = usersService.getUserInfoByToken(getTokenFromHeader(request));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+//    REGISTER
     @PostMapping("register")
     public UsersDTO newUser(@RequestBody Users users) {
         UsersDTO response = usersService.newUser(users);
         return response;
     }
 
-//  LOG IN
+//    LOG IN
     @PostMapping("login")
     public UsersDTO signInUser(@RequestBody UsersDTO usersDTO) throws BadCredentialsException {
         UsersDTO response = usersService.signInUser(usersDTO);
         return response;
     }
 
-    // UPDATE USER
+//    UPDATE USER
     @PutMapping("updateuser")
     public ResponseEntity<String> updateUser(HttpServletRequest request, @RequestBody Users user) {
         usersService.updateUser(getTokenFromHeader(request), user);
@@ -73,7 +82,7 @@ public class UsersController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
-    //DELETE USER
+//    DELETE USER
     @DeleteMapping("deleteuser")
     public ResponseEntity<String> deleteUser(HttpServletRequest request, @RequestBody UsersDTO usersDTO) {
         usersService.deleteUser(getTokenFromHeader(request), usersDTO);
