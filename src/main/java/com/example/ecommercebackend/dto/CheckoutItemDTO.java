@@ -3,7 +3,7 @@ package com.example.ecommercebackend.dto;
 public class CheckoutItemDTO {
     private int products_id;
     private String products_name;
-    private int users_id;
+    private String users_id;
     private int quantity;
     private double price;
 
@@ -26,11 +26,11 @@ public class CheckoutItemDTO {
         this.products_name = products_name;
     }
 
-    public int getUsers_id() {
+    public String getUsers_id() {
         return users_id;
     }
 
-    public void setUsers_id(int users_id) {
+    public void setUsers_id(String users_id) {
         this.users_id = users_id;
     }
 
