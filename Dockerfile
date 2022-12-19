@@ -2,6 +2,9 @@
 
 FROM openjdk:17 AS builder
 
+ARG SECRET_KEY
+ARG STRIPE_SECRET_KEY
+
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
@@ -9,8 +12,7 @@ COPY src src
 RUN chmod +x mvnw
 RUN ./mvnw clean package
 
-ARG SECRET_KEY
-ARG STRIPE_SECRET_KEY
+
 
 FROM openjdk:17
 
