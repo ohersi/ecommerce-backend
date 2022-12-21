@@ -15,8 +15,6 @@ COPY src src
 RUN chmod +x mvnw
 RUN ./mvnw clean package
 
-
-
 FROM openjdk:17
 
 COPY --from=builder target/*.jar /app.jar
